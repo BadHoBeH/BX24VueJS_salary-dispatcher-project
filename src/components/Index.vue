@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <a-button @click="getBitAuth()">Кнопка</a-button>
-  </div>
+  <h1>Главная страница</h1>
 </template>
 
 <script>

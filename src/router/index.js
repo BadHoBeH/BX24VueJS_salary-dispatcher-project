@@ -2,8 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 /*Page active*/
 
-import pageIndex from "../components/Index";
-import reportIndex from "../components/REPORTS/Index";
+import reportIndex from "../components/Index";
+import pageIndex from "../components/REPORTS/Index";
 
 
 /*Page passive*/
@@ -11,15 +11,14 @@ import reportIndex from "../components/REPORTS/Index";
 Vue.use(VueRouter);
 const routes = [
 
-
     {
-        path: '/',
-        name: 'pageIndex',
-        component: pageIndex
-    },{
         path: '/report',
         name: 'reportIndex',
         component: reportIndex
+    },{
+        path: '/',
+        name: 'pageIndex',
+        component: pageIndex
     },
 
 ];
