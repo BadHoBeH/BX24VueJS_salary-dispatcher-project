@@ -1,33 +1,40 @@
 {
-  "name": "vue2cli-app-bitrix",
+  "name": "bx24vuejs_salary_hr",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "lint:fix": "eslint --fix --ext .js,.jsx ."
   },
   "dependencies": {
-    "ant-design-vue": "^1.6.5",
+    "@2bad/bitrix": "^2.3.1",
+    "ant-design-vue": "^1.7.2",
+    "antd-prompt": "^0.3.1",
     "bitrix24-vue": "^0.1.38",
-    "bx24": "^0.1.3",
-    "core-js": "^3.6.5",
+    "devextreme": "^20.2.3",
+    "devextreme-vue": "^20.2.3",
     "lodash": "^4.17.20",
-    "moment": "^2.27.0",
+    "moment": "^2.29.1",
+    "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
-    "vue-excel-export": "^0.1.3",
+    "vue-grid-layout": "^2.3.11",
+    "vue-masonry-css": "^1.0.3",
     "vue-moment": "^4.1.0",
     "vue-resize": "^0.5.0",
-    "vue-router": "^3.4.3",
-    "vue-types": "^2.0.1",
-    "vuex": "^3.5.1"
+    "vue-router": "^3.2.0",
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-pwa": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
-    "babel-eslint": "^10.1.0",
+    "@vue/eslint-config-airbnb": "^5.0.2",
     "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^6.2.2",
     "vue-template-compiler": "^2.6.11"
   },
@@ -38,10 +45,10 @@
     },
     "extends": [
       "plugin:vue/essential",
-      "eslint:recommended"
+      "@vue/airbnb"
     ],
     "parserOptions": {
-      "parser": "babel-eslint"
+      "ecmaVersion": 2020
     },
     "rules": {}
   },
