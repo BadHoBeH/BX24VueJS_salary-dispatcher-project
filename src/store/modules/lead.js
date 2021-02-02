@@ -51,7 +51,6 @@ export const getters = {
   g_fl: (state) => (type = 'default') => (type === 'all' ? state.all.fields.array : state.all.fields.array[type]),
   // eslint-disable-next-line no-shadow,consistent-return
   filter: (state) => (st = 'default', filter) => {
-    console.log(state.all[st], isArray(state.all[st]));
     switch (isArray(state.all[st])) {
       case true: {
         return state.all[st].filter(filter);
