@@ -102,6 +102,7 @@ export default {
 
       get_auth: 'auth/getAuth',
       get_dataUser: 'user/g_id',
+      get_dataStage: 'stage/g_id',
 
     }),
 
@@ -312,6 +313,9 @@ export default {
             return this.get_dealDataID(i) ? this.get_dealDataID(i).TITLE : `Не найдено [${i}]`;
           } case 'S:HTML': {
             return i.TEXT || null;
+          } case 'crm_status': {
+            if (k === 'STATUS_ID') return this.get_dataStage(i).NAME;
+            return ' - ';
           } case 'S:employee': {
             // eslint-disable-next-line no-nested-ternary
             return i > 0 ? this.get_dataUser(i) ? this.get_dataUser(i).NAME : null : null;

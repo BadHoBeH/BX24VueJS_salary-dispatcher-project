@@ -24,10 +24,14 @@ export default {
   data() {
     return {
       height: 10,
-      filter: {
+      query: {
         user: {
           select: ['ID', 'NAME', 'UF_DEPARTMENT', 'WORK_POSITION'],
           key: 'ID',
+        },
+        stage: {
+          select: ['NAME', 'NAME_INT', 'STATUS_ID'],
+          key: 'STATUS_ID',
         },
       },
     };
@@ -41,6 +45,7 @@ export default {
   methods: {
     ...mapActions({
       get_user: 'user/get',
+      get_stage: 'stage/get',
     }),
     async updateViewSize({ height }) {
       if (process.env.NODE_ENV === 'development' || !await Bitrix24.init()) return true;
@@ -54,7 +59,8 @@ export default {
   watch: {
     authSucces: {
       handler() {
-        this.get_user(this.filter.user);
+        this.get_user(this.query.user);
+        this.get_stage(this.query.stage);
       },
     },
   },
