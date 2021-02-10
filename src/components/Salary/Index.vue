@@ -65,7 +65,7 @@ import moment from 'moment';
 import DataGrid from '@/components/Table/Index.vue';
 import { getTypeFormat } from '@/plugins/typeColumn';
 
-const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'DATE_CREATE', 'UF_CRM_1610526571', 'target', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
+const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'STATUS_ID', 'UF_CRM_1610526571', 'DATE_CREATE', 'target', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
 const COLUMN_SUM_DEFAULT = {
   sum: ['target', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary'],
   count: ['TITLE'],
@@ -104,6 +104,7 @@ export default {
 
       get_fieldLead: 'lead/g_fl',
       filter_dataLead: 'lead/filter',
+      get_dataStage: 'stage/g_id',
 
       get_auth: 'auth/getAuth',
       get_dataUser: 'user/g_id',
@@ -326,6 +327,9 @@ export default {
             return this.get_dealDataID(i) ? this.get_dealDataID(i).TITLE : `Не найдено [${i}]`;
           } case 'S:HTML': {
             return i.TEXT || null;
+          } case 'crm_status': {
+            if (k === 'STATUS_ID') return this.get_dataStage(i).NAME;
+            return ' - ';
           } case 'S:employee': {
             // eslint-disable-next-line no-nested-ternary
             return i > 0 ? this.get_dataUser(i) ? this.get_dataUser(i).NAME : null : null;
@@ -347,9 +351,9 @@ export default {
     },
 
     getFilterUser() {
-      const a = this.get_auth;
-      if (a.user.ADMIN || a.user.ID === '6' || a.user.ID === '8') return false;
-      return { '=UF_CRM_1582724265': a.user.ID };
+      // const a = this.get_auth;
+      return false;
+      // return { '=UF_CRM_1582724265': a.user.ID };
     },
 
     async getLeadData(current) {
