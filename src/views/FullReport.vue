@@ -1,6 +1,6 @@
 <template>
   <a-spin
-    :spinning="data.length === 0">
+    :spinning="data === null">
     <div class="search">
       <a-month-picker
         :locale="locale"
@@ -8,6 +8,7 @@
         v-model="month"
       />
       <a-card
+        v-if="data"
         :title="`Статистическая сводная по отделу`"
         :style="{margin: '.5rem 0 .5rem 0', width: '100%'}"
         :bodyStyle="{padding:'0px'}"
@@ -42,6 +43,7 @@
       </a-card>
 
         <data-grid
+          v-if="data"
           :dataTable="viewFormat(data.table)"
           :fields="{ind:fields}"
           :summary="summary"
@@ -325,6 +327,9 @@ export default {
           } case 'user': {
             // eslint-disable-next-line no-nested-ternary
             return i > 0 ? this.get_dataUser(i) ? this.get_dataUser(i).NAME : null : null;
+          } case 'crm_multifield': {
+            console.log(i, k);
+            return i.map((i3) => i3.VALUE).join(', ');
           } case 'L': {
             return fields(k).DISPLAY_VALUES_FORM[i];
           } case 'enumeration': {
@@ -359,7 +364,7 @@ export default {
         '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
         '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
       }];
-      const selectArray = ['*', 'UF_*'];
+      const selectArray = ['*', 'PHONE', 'UF_*'];
       return Promise.all(filterArray.map(async (i) => this.get_lead({
         FILTER: i,
         select: selectArray,
@@ -372,6 +377,7 @@ export default {
   watch: {
     month: {
       async handler() {
+        this.data = null;
         this.data = await this.getDataMonth(this.month);
       },
       immediate: true,
