@@ -13,6 +13,7 @@
 /**
  *  import components
  */
+import { bitrixAuth } from '@/plugins/authBX24';
 import AppMenu from '@/components/Menu/Index.vue';
 import Bitrix24 from 'bitrix24-vue';
 import { mapGetters, mapActions } from 'vuex';
@@ -55,10 +56,20 @@ export default {
       BX24.fitWindow();
       return true;
     },
+    async startworkflow() {
+      console.log('startWF');
+      const params = {
+        TEMPLATE_ID: 51,
+        DOCUMENT_ID: ['crm', 'CCrmDocumentLead', 33772],
+        PARAMETERS: { a: 1 },
+      };
+      await (await bitrixAuth()).call('bizproc.workflow.start', params);
+    },
   },
   watch: {
     authSucces: {
       handler() {
+        this.startworkflow();
         this.get_user(this.query.user);
         this.get_stage(this.query.stage);
       },

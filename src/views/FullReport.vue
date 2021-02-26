@@ -62,9 +62,9 @@ import moment from 'moment';
 import DataGrid from '@/components/Table/Index.vue';
 import { getTypeFormat } from '@/plugins/typeColumn';
 
-const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'STATUS_ID', 'UF_CRM_1610526571', 'ASSIGNED_BY_ID', 'UF_CRM_1582724265', 'DATE_CREATE', 'UF_CRM_1610526571', 'target', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
+const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'STATUS_ID', 'UF_CRM_1610526571', 'ASSIGNED_BY_ID', 'UF_CRM_1582724265', 'DATE_CREATE', 'UF_CRM_1610526571', 'target', 'untarget', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
 const COLUMN_SUM_DEFAULT = {
-  sum: ['target', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary'],
+  sum: ['target', 'success', 'untarget', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary'],
   count: ['TITLE'],
 };
 const SALARIES_DEFAULT = {
@@ -133,6 +133,7 @@ export default {
         desing_only: { NAME: 'Дизайн/выплата' },
         success: { NAME: 'Продано' },
         target: { NAME: 'Целевой' },
+        untarget: { NAME: 'Не целевой' },
       }, (i, k) => ({
         ...i,
         visible: this.table.fields.visible[0]
@@ -227,7 +228,15 @@ export default {
         } : (k === '1055') ? {
           headhunter_now: {
             value: sumBy(i, 'headhunter_now'),
-            title: 'Собеседование/выплата',
+            title: 'Собеседование',
+          },
+          headhunter_target: {
+            value: sumBy(i, 'target'),
+            title: 'Целевые',
+          },
+          headhunter_untarget: {
+            value: sumBy(i, 'untarget'),
+            title: 'Нецелевые',
           },
         } : null;
         return {
@@ -280,6 +289,7 @@ export default {
             };
             const add = {
               target: Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554),
+              untarget: !(Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554)),
               headhunter_now: Condition.dateHhNow,
               estimate_now: Condition.dateEstimateNow && !Condition.dateDesingPrewEstimate,
               estimate_only: Condition.dateEstimateNow && Condition.dateDesingPrewEstimate,
@@ -355,14 +365,16 @@ export default {
         '<=DATE_CREATE': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
       }, {
         ...this.getFilterUser(),
-        '=UF_CRM_5FAE552A943B9': null,
         '>=UF_CRM_1604060854': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
         '<=UF_CRM_1604060854': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
       }, {
         ...this.getFilterUser(),
-        '=UF_CRM_5FAE552A943B9': null,
         '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
         '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+      }, {
+        ...this.getFilterUser(),
+        '>=UF_CRM_1611850248': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
+        '<=UF_CRM_1611850248': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
       }];
       const selectArray = ['*', 'PHONE', 'UF_*'];
       return Promise.all(filterArray.map(async (i) => this.get_lead({
