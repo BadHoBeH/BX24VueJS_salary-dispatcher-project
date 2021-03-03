@@ -370,22 +370,22 @@ export default {
       const filterArray = [{
         ...this.getFilterUser(),
         '=UF_CRM_5FAE552A943B9': null,
-        '>=DATE_CREATE': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
-        '<=DATE_CREATE': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+        '>=DATE_CREATE': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=DATE_CREATE': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
       }, {
         ...this.getFilterUser(),
         '=UF_CRM_5FAE552A943B9': null,
-        '>=UF_CRM_1604060854': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
-        '<=UF_CRM_1604060854': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+        '>=UF_CRM_1604060854': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=UF_CRM_1604060854': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
       }, {
         ...this.getFilterUser(),
         '=UF_CRM_5FAE552A943B9': null,
-        '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
-        '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+        '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
       }, {
         ...this.getFilterUser(),
-        '>=UF_CRM_1611850248': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
-        '<=UF_CRM_1611850248': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+        '>=UF_CRM_1611850248': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=UF_CRM_1611850248': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
       }];
       const selectArray = ['ID', 'TITLE', 'STATUS_ID', 'STATUS_SEMANTIC_ID', 'DATE_CREATE', 'UF_*'];
       return Promise.all(filterArray.map(async (i) => this.get_lead({

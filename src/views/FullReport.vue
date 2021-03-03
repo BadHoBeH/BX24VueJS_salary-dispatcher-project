@@ -62,7 +62,7 @@ import moment from 'moment';
 import DataGrid from '@/components/Table/Index.vue';
 import { getTypeFormat } from '@/plugins/typeColumn';
 
-const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'STATUS_ID', 'UF_CRM_1610526571', 'ASSIGNED_BY_ID', 'UF_CRM_1582724265', 'DATE_CREATE', 'UF_CRM_1610526571', 'target', 'untarget', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
+const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'STATUS_ID', 'UF_CRM_1610526571', 'ASSIGNED_BY_ID', 'UF_CRM_1582724265', 'DATE_CREATE', 'UF_CRM_1610526571', 'target', 'untarget', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1611850248', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
 const COLUMN_SUM_DEFAULT = {
   sum: ['target', 'success', 'untarget', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary'],
   count: ['TITLE'],
@@ -361,20 +361,20 @@ export default {
       const filterArray = [{
         ...this.getFilterUser(),
         '=UF_CRM_5FAE552A943B9': null,
-        '>=DATE_CREATE': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
-        '<=DATE_CREATE': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+        '>=DATE_CREATE': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=DATE_CREATE': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
       }, {
         ...this.getFilterUser(),
-        '>=UF_CRM_1604060854': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
-        '<=UF_CRM_1604060854': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+        '>=UF_CRM_1604060854': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=UF_CRM_1604060854': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
       }, {
         ...this.getFilterUser(),
-        '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
-        '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+        '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
       }, {
         ...this.getFilterUser(),
-        '>=UF_CRM_1611850248': moment(current).clone().startOf('month').format('DD.MM.YYYY'),
-        '<=UF_CRM_1611850248': moment(current).clone().endOf('month').format('DD.MM.YYYY'),
+        '>=UF_CRM_1611850248': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=UF_CRM_1611850248': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
       }];
       const selectArray = ['*', 'PHONE', 'UF_*'];
       return Promise.all(filterArray.map(async (i) => this.get_lead({
