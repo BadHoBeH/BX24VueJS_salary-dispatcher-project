@@ -293,8 +293,10 @@ export default {
                   .isBefore(moment(i2.UF_CRM_1597071883)),
               };
               const add = {
-                target: Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554),
-                untarget: !(Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554)),
+                // eslint-disable-next-line max-len
+                target: Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554) && !Number(i2.UF_CRM_5FAE552A943B9),
+                // eslint-disable-next-line max-len
+                untarget: !(Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554) && !Number(i2.UF_CRM_5FAE552A943B9)),
                 headhunter_now: Condition.dateHhNow,
                 estimate_now: Condition.dateEstimateNow && !Condition.dateDesingPrewEstimate,
                 estimate_only: Condition.dateEstimateNow && Condition.dateDesingPrewEstimate,

@@ -14,7 +14,11 @@
       :visible="i.visible"
       :format="i.type"
       :dataType="i.dataType"
+      :cell-template="i.template || null"
     />
+    <template #urllink="{ data }">
+      <a target="_blank" :href="data.value.url">{{data.value.title}}</a>
+    </template>
     <DxExport :enabled="true" :allow-export-selected-data="false"/>
     <DxColumnFixing :enabled="true"/>
     <DxHeaderFilter :visible="true"/>
@@ -23,8 +27,6 @@
     <DxColumnChooser :enabled="true"/>
     <dxGrouping :autoExpandAll="false" />
     <dxPaging :pageSize="20" />
-    <dxColumn
-    />
     <dxColumn/>
     <DxSummary>
       <DxTotalItem

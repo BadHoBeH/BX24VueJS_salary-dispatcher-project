@@ -139,6 +139,7 @@ export default {
         visible: this.table.fields.visible[0]
           ? !this.table.fields.visible.includes(k)
           : this.table.fields.visible.includes(k),
+        template: k === 'TITLE' ? 'urllink' : null,
         type: getTypeFormat(i.type) === 'number' ? 'fixedPoint' : null,
         dataType: getTypeFormat(i.type),
       }));
@@ -158,7 +159,7 @@ export default {
         || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
           && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1054') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
-      const object = ((data.filter((i) => (moment(i.UF_CRM_1611850248).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1055') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const object = ((data.filter((i) => (moment(i.UF_CRM_1611850248).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1055') && !Number(i.UF_CRM_5FAE552A943B9) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
       return {
         sknebo: {
@@ -288,8 +289,14 @@ export default {
                 .isBefore(moment(i2.UF_CRM_1597071883)),
             };
             const add = {
-              target: Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554),
-              untarget: !(Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554)),
+              TITLE: {
+                url: `https://crm.sknebo.ru/crm/lead/details/${i2.ID}/`,
+                title: i2.TITLE,
+              },
+              // eslint-disable-next-line max-len
+              target: Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554) && !Number(i2.UF_CRM_5FAE552A943B9),
+              // eslint-disable-next-line max-len
+              untarget: !(Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554) && !Number(i2.UF_CRM_5FAE552A943B9)),
               headhunter_now: Condition.dateHhNow,
               estimate_now: Condition.dateEstimateNow && !Condition.dateDesingPrewEstimate,
               estimate_only: Condition.dateEstimateNow && Condition.dateDesingPrewEstimate,
@@ -338,7 +345,6 @@ export default {
             // eslint-disable-next-line no-nested-ternary
             return i > 0 ? this.get_dataUser(i) ? this.get_dataUser(i).NAME : null : null;
           } case 'crm_multifield': {
-            console.log(i, k);
             return i.map((i3) => i3.VALUE).join(', ');
           } case 'L': {
             return fields(k).DISPLAY_VALUES_FORM[i];
