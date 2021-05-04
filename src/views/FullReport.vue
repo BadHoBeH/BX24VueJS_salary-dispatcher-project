@@ -32,7 +32,8 @@
                     <a-statistic
                       v-if="i2.value"
                       :title="i2.title"
-                      :value="Number(i2.value)"
+                      :value="Number(i2.value.v || i2.value)"
+                      :suffix="i2.value.sf && `${i2.value.sf} ${Number(i2.value.sfv)}`"
                     />
                   </a-card-grid>
                 </div>
@@ -62,7 +63,7 @@ import moment from 'moment';
 import DataGrid from '@/components/Table/Index.vue';
 import { getTypeFormat } from '@/plugins/typeColumn';
 
-const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'STATUS_ID', 'UF_CRM_1610526571', 'ASSIGNED_BY_ID', 'UF_CRM_1582724265', 'DATE_CREATE', 'UF_CRM_1610526571', 'target', 'untarget', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1611850248', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
+const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'title_url', 'STATUS_ID', 'UF_CRM_1610526571', 'ASSIGNED_BY_ID', 'UF_CRM_1582724265', 'DATE_CREATE', 'UF_CRM_1610526571', 'target', 'untarget', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1611850248', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
 const COLUMN_SUM_DEFAULT = {
   sum: ['target', 'success', 'untarget', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary'],
   count: ['TITLE'],
@@ -90,7 +91,7 @@ export default {
           def: {},
         },
       },
-      month: new Date().getDate() > 16 ? moment() : moment().subtract(1, 'months'),
+      month: new Date().getDate() > 9 ? moment() : moment().subtract(1, 'months'),
       data: [],
     };
   },
@@ -128,6 +129,7 @@ export default {
       return mapValues({
         ...this.get_fieldLead('all'),
         estimate_now: { NAME: 'Ремонт/конверсия' },
+        title_url: { NAME: 'ID URL', template: 'urllink' },
         estimate_only: { NAME: 'Ремонт/выплата' },
         desing_now: { NAME: 'Дизайн/конверсия' },
         desing_only: { NAME: 'Дизайн/выплата' },
@@ -139,7 +141,6 @@ export default {
         visible: this.table.fields.visible[0]
           ? !this.table.fields.visible.includes(k)
           : this.table.fields.visible.includes(k),
-        template: k === 'TITLE' ? 'urllink' : null,
         type: getTypeFormat(i.type) === 'number' ? 'fixedPoint' : null,
         dataType: getTypeFormat(i.type),
       }));
@@ -219,12 +220,20 @@ export default {
             title: 'Замер/выплата',
           },
           success: {
-            value: sumBy(i, 'success'),
-            title: 'Всего успешных',
+            value: {
+              v: sumBy(i, 'success'),
+              sf: '/',
+              sfv: sumBy(i, 'untarget') + sumBy(i, 'target'),
+            },
+            title: 'Всего успешных / Всего',
           },
           itogo: {
-            value: sumBy(i, 'target'),
-            title: 'Всего целевых',
+            value: {
+              v: sumBy(i, 'target'),
+              sf: '/',
+              sfv: sumBy(i, 'untarget'),
+            },
+            title: 'Целевые / нецелевые',
           },
         } : (k === '1055') ? {
           headhunter_now: {
@@ -289,7 +298,7 @@ export default {
                 .isBefore(moment(i2.UF_CRM_1597071883)),
             };
             const add = {
-              TITLE: {
+              title_url: {
                 url: `https://crm.sknebo.ru/crm/lead/details/${i2.ID}/`,
                 title: i2.TITLE,
               },

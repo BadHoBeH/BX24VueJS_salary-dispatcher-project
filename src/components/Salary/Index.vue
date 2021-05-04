@@ -10,7 +10,7 @@
       <a-card
         v-for="(i, k) in data"
         :key="k"
-        :title="k !== 'null' ? get_dataUser(k).NAME : 'Кто-то не наш'"
+        :title="k ? get_dataUser(k) ? get_dataUser(k).NAME : `Кто-то не наш`: `${i}`"
         :style="{margin: '.5rem 0 .5rem 0', width: '100%'}"
         :bodyStyle="{padding:'0px'}"
         style="width: 100%">
@@ -93,7 +93,7 @@ export default {
           def: {},
         },
       },
-      month: new Date().getDate() > 16 ? moment() : moment().subtract(1, 'months'),
+      month: new Date().getDate() > 9 ? moment() : moment().subtract(1, 'months'),
       data: [],
     };
   },
@@ -163,6 +163,7 @@ export default {
           && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1054') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
       const object = ((data.filter((i) => (moment(i.UF_CRM_1611850248).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1055') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const okna = ((data.filter((i) => (moment(i.UF_CRM_1616166187).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1361') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
       return {
         sknebo: {
@@ -192,6 +193,20 @@ export default {
                   // eslint-disable-next-line no-nested-ternary
                   ? 300 : object < 50
                     ? 350 : 350,
+        },
+        okna: {
+          conversion: okna,
+          // eslint-disable-next-line no-nested-ternary
+          rate: object < 30
+            // eslint-disable-next-line no-nested-ternary
+            ? 300 : object < 35
+              // eslint-disable-next-line no-nested-ternary
+              ? 300 : object < 40
+                // eslint-disable-next-line no-nested-ternary
+                ? 300 : object < 45
+                  // eslint-disable-next-line no-nested-ternary
+                  ? 300 : object < 50
+                    ? 300 : 300,
         },
       };
     },
@@ -229,6 +244,7 @@ export default {
             value: sumBy(i, 'success') + sumBy(i, 'estimate_only') + sumBy(i, 'desing_only'),
             title: 'Итоговая зарплата',
           },
+          // eslint-disable-next-line no-nested-ternary
         } : (k === '1055') ? {
           headhunter_now: {
             value: sumBy(i, 'headhunter_now'),
@@ -241,6 +257,11 @@ export default {
           headhunter_untarget: {
             value: sumBy(i, 'untarget'),
             title: 'Нецелевые',
+          },
+        } : (k === '1361') ? {
+          success: {
+            value: sumBy(i, 'success'),
+            title: 'Всего успешных',
           },
         } : null;
         return {
