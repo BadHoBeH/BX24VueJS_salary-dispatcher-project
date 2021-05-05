@@ -223,7 +223,7 @@ export default {
             value: {
               v: sumBy(i, 'success'),
               sf: '/',
-              sfv: sumBy(i, 'untarget') + sumBy(i, 'target'),
+              sfv: sumBy(i, 'untarget_m') + sumBy(i, 'target'),
             },
             title: 'Всего успешных / Всего',
           },
@@ -231,7 +231,7 @@ export default {
             value: {
               v: sumBy(i, 'target'),
               sf: '/',
-              sfv: sumBy(i, 'untarget'),
+              sfv: sumBy(i, 'untarget_m'),
             },
             title: 'Целевые / нецелевые',
           },
@@ -304,6 +304,7 @@ export default {
               },
               // eslint-disable-next-line max-len
               target: Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554) && !Number(i2.UF_CRM_5FAE552A943B9),
+              untarget_m: (Condition.dateCreateNow && !Number(i2.UF_CRM_1581944554)),
               // eslint-disable-next-line max-len
               untarget: !(Condition.dateCreateNow && !!Number(i2.UF_CRM_1581944554) && !Number(i2.UF_CRM_5FAE552A943B9)),
               headhunter_now: Condition.dateHhNow,
