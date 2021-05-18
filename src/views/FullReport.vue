@@ -355,7 +355,7 @@ export default {
             // eslint-disable-next-line no-nested-ternary
             return i > 0 ? this.get_dataUser(i) ? this.get_dataUser(i).NAME : null : null;
           } case 'crm_multifield': {
-            return i.map((i3) => i3.VALUE).join(', ');
+            return i.map((i3) => i3.VALUE.replace(/\D/g, '').replace(/^8/, '7')).join(', ');
           } case 'L': {
             return fields(k).DISPLAY_VALUES_FORM[i];
           } case 'enumeration': {
