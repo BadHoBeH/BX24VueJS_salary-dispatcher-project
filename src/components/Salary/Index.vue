@@ -34,7 +34,9 @@
                       v-if="i2.value"
                       :title="i2.title"
                       :value="Number(i2.value)"
-                      :suffix="` / ${Number(i2.value)*i1.target.rate}₽`"
+                      :suffix="i2.suffix === 'count'
+                      ? ` / ${Number(i2.value)* (i1.target ? i1.target.rate : 0)}₽`
+                      : i2.suffix"
                     />
                   </a-card-grid>
                 </div>
@@ -178,7 +180,11 @@ export default {
                 ? 250 : sknebo < 45
                   // eslint-disable-next-line no-nested-ternary
                   ? 300 : sknebo < 50
-                    ? 350 : 375,
+                    ? 375 : 400,
+          // eslint-disable-next-line no-nested-ternary
+          bonus: sknebo > 60
+            ? 7000 : sknebo > 50
+              ? 5000 : 0,
         },
         object: {
           conversion: object,
@@ -197,16 +203,7 @@ export default {
         okna: {
           conversion: okna,
           // eslint-disable-next-line no-nested-ternary
-          rate: object < 30
-            // eslint-disable-next-line no-nested-ternary
-            ? 300 : object < 35
-              // eslint-disable-next-line no-nested-ternary
-              ? 300 : object < 40
-                // eslint-disable-next-line no-nested-ternary
-                ? 300 : object < 45
-                  // eslint-disable-next-line no-nested-ternary
-                  ? 300 : object < 50
-                    ? 300 : 300,
+          rate: 300,
         },
       };
     },
@@ -222,55 +219,73 @@ export default {
           success: {
             value: sumBy(i, 'success'),
             title: 'Всего успешных',
+            suffix: 'count',
           },
           desing_now: {
             value: sumBy(i, 'desing_now'),
             title: 'Дизайн/конверсия',
-            suffix: 'proc',
+            suffix: 'count',
           },
           estimate_now: {
             value: sumBy(i, 'estimate_now'),
+            suffix: 'count',
             title: 'Замер/конверсия',
           },
           desing_only: {
             value: sumBy(i, 'desing_only'),
+            suffix: 'count',
             title: 'Дизайн/выплата',
           },
           estimate_only: {
             value: sumBy(i, 'estimate_only'),
+            suffix: 'count',
             title: 'Замер/выплата',
+          },
+          estimate_bonus: {
+            value: data.conversion.sknebo.bonus,
+            suffix: '₽',
+            title: 'Премия',
           },
           itogo: {
             value: sumBy(i, 'success') + sumBy(i, 'estimate_only') + sumBy(i, 'desing_only'),
+            suffix: 'count',
             title: 'Итоговая зарплата',
           },
           // eslint-disable-next-line no-nested-ternary
         } : (k === '1055') ? {
           headhunter_now: {
             value: sumBy(i, 'headhunter_now'),
-            title: 'Собеседование',
+            suffix: 'count',
+            title: 'Итоговая зарплата',
           },
           headhunter_target: {
             value: sumBy(i, 'target'),
+            suffix: null,
             title: 'Целевые',
           },
           headhunter_untarget: {
             value: sumBy(i, 'untarget'),
+            suffix: null,
             title: 'Нецелевые',
           },
         } : (k === '1361') ? {
           success: {
             value: sumBy(i, 'success'),
-            title: 'Всего успешных',
+            suffix: 'count',
+            title: 'Итоговая зарплата',
           },
         } : null;
         return {
           ...info,
           title: this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k)
             ? this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k).VALUE
-            : 'Структурное подразделение не выбрано',
+            : 'Структурное ответвление не выбрано',
           // eslint-disable-next-line no-nested-ternary
-          target: k === '1054' ? data.conversion.sknebo : (k === '1055' ? data.conversion.object : null),
+          target: k === '1054'
+            // eslint-disable-next-line no-nested-ternary
+            ? data.conversion.sknebo : k === '1055'
+              ? data.conversion.object : k === '1361'
+                ? data.conversion.okna : null,
         };
       });
     },
@@ -287,25 +302,25 @@ export default {
             create: moment(i.DATE_CREATE),
             headhunter: moment(i.UF_CRM_1611850248),
             desing: moment(i.UF_CRM_1604060854),
+            okna: moment(i.UF_CRM_1616166187),
             estimate: moment(i.UF_CRM_1597071883),
           };
           return ((date.create.isSame(current, 'months'))
             || (date.headhunter.isSame(current, 'months'))
             || (date.desing.isSame(current, 'months'))
-            || (date.estimate.isSame(current, 'months')));
+            || (date.estimate.isSame(current, 'months'))
+            || (date.okna.isSame(current, 'months')));
         });
         // eslint-disable-next-line no-param-reassign
         return mapValues(groupBy(data, 'UF_CRM_1582724265'), (i) => {
           const getRate = this.getRate(i, current);
           return {
-            conversion: {
-              sknebo: getRate.sknebo,
-              object: getRate.object,
-            },
+            conversion: getRate,
             table: i.map((i2) => {
               const Condition = {
                 dateCreateNow: moment(i2.DATE_CREATE).isSame(current, 'month'),
                 dateHhNow: moment(i2.UF_CRM_1611850248).isSame(current, 'month'),
+                datOknaNow: moment(i2.UF_CRM_1616166187).isSame(current, 'month'),
                 dateDesingNow: moment(i2.UF_CRM_1604060854).isSame(current, 'month'),
                 dateEstimateNow: moment(i2.UF_CRM_1597071883).isSame(current, 'month'),
                 dateEstimatePrewDesing: moment(i2.UF_CRM_1597071883)
@@ -322,11 +337,13 @@ export default {
                 estimate_now: Condition.dateEstimateNow && !Condition.dateDesingPrewEstimate,
                 estimate_only: Condition.dateEstimateNow && Condition.dateDesingPrewEstimate,
                 desing_now: Condition.dateDesingNow && !Condition.dateEstimatePrewDesing,
+                okna_now: Condition.datOknaNow,
                 desing_only: Condition.dateDesingNow && Condition.dateEstimatePrewDesing,
                 success: (Condition.dateDesingNow && !Condition.dateEstimatePrewDesing)
                   || (Condition.dateEstimateNow && !Condition.dateDesingPrewEstimate)
-                  || Condition.dateHhNow,
+                  || Condition.dateHhNow || Condition.datOknaNow,
               };
+              // console.log(getRate);
               return {
                 ...i2,
                 ...add,
