@@ -180,7 +180,8 @@ export default {
                 ? 250 : sknebo < 45
                   // eslint-disable-next-line no-nested-ternary
                   ? 300 : sknebo < 50
-                    ? 375 : 400,
+                    ? 350 : sknebo < 60
+                      ? 375 : 400,
           // eslint-disable-next-line no-nested-ternary
           bonus: sknebo > 60
             ? 7000 : sknebo > 50
@@ -203,7 +204,7 @@ export default {
         okna: {
           conversion: okna,
           // eslint-disable-next-line no-nested-ternary
-          rate: 300,
+          rate: 350,
         },
       };
     },
@@ -273,6 +274,16 @@ export default {
             value: sumBy(i, 'success'),
             suffix: 'count',
             title: 'Итоговая зарплата',
+          },
+          okna_target: {
+            value: sumBy(i, 'target'),
+            suffix: null,
+            title: 'Целевые',
+          },
+          okna_untarget: {
+            value: sumBy(i, 'untarget'),
+            suffix: null,
+            title: 'Нецелевые',
           },
         } : null;
         return {
@@ -412,17 +423,21 @@ export default {
         '=UF_CRM_5FAE552A943B9': null,
         '>=DATE_CREATE': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=DATE_CREATE': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
-      }, {
+      }, /* Дизайн */{
         ...this.getFilterUser(),
         '=UF_CRM_5FAE552A943B9': null,
         '>=UF_CRM_1604060854': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1604060854': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
-      }, {
+      }, /* Замер-ремонт */{
         ...this.getFilterUser(),
         '=UF_CRM_5FAE552A943B9': null,
         '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
-      }, {
+      }, /* Окна */{
+        ...this.getFilterUser(),
+        '>=UF_CRM_1616166187': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=UF_CRM_1616166187': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
+      }, /* Собесы */{
         ...this.getFilterUser(),
         '>=UF_CRM_1611850248': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1611850248': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),

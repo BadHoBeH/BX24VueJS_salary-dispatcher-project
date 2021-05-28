@@ -379,15 +379,21 @@ export default {
         '=UF_CRM_5FAE552A943B9': null,
         '>=DATE_CREATE': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=DATE_CREATE': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
-      }, {
+      }, /* Дизайн */{
         ...this.getFilterUser(),
+        '=UF_CRM_5FAE552A943B9': null,
         '>=UF_CRM_1604060854': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1604060854': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
-      }, {
+      }, /* Замер-ремонт */{
         ...this.getFilterUser(),
+        '=UF_CRM_5FAE552A943B9': null,
         '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
-      }, {
+      }, /* Окна */{
+        ...this.getFilterUser(),
+        '>=UF_CRM_1616166187': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
+        '<=UF_CRM_1616166187': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
+      }, /* Собесы */{
         ...this.getFilterUser(),
         '>=UF_CRM_1611850248': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1611850248': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
