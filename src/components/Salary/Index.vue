@@ -303,8 +303,9 @@ export default {
         } : null;
         return {
           ...info,
+          // eslint-disable-next-line no-nested-ternary
           title: this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k)
-            ? this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k).VALUE
+            ? (this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k).ID === '1055' ? 'Объект и отклики' : this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k).VALUE)
             : 'Структурное ответвление не выбрано',
           // eslint-disable-next-line no-nested-ternary
           target: k === '1054'
