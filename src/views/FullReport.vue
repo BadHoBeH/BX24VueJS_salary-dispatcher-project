@@ -57,7 +57,7 @@
 import locale from 'ant-design-vue/es/date-picker/locale/ru_RU';
 import { mapActions, mapGetters } from 'vuex';
 import {
-  forEach, groupBy, mapValues, round, sumBy,
+  forEach, groupBy, includes, mapValues, round, sumBy,
 } from 'lodash';
 import moment from 'moment';
 import DataGrid from '@/components/Table/Index.vue';
@@ -160,7 +160,17 @@ export default {
         || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
           && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1054') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
-      const object = ((data.filter((i) => (moment(i.UF_CRM_1611850248).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1055') && !Number(i.UF_CRM_5FAE552A943B9) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const objectTemp = data.filter((i) => includes(['1767', '1055'], i.UF_CRM_1610526571)); // Только те, которые подходят по структурным
+      const objectSucc = objectTemp.filter((i) => moment(i.UF_CRM_1611850248).isSame(current, 'month')); // Только успешные
+      const objectTarg = objectTemp.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)); // Только целевые
+      const object = (objectSucc.length / objectTarg.length) * 100;
+
+      const coldBaseTemp = data.filter((i) => includes(['1777'], i.UF_CRM_1610526571)); // Только те, которые подходят по структурным
+      const coldBaseSucc = coldBaseTemp.filter((i) => moment(i.UF_CRM_1611850248).isSame(current, 'month')); // Только успешные
+      const coldBaseTarg = coldBaseTemp.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)); // Только целевые
+      const coldBase = (coldBaseSucc.length / coldBaseTarg.length) * 100;
+
+      const okna = ((data.filter((i) => (moment(i.UF_CRM_1616166187).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1361') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
       return {
         sknebo: {
@@ -176,6 +186,14 @@ export default {
                   // eslint-disable-next-line no-nested-ternary
                   ? 300 : sknebo < 50
                     ? 350 : 375,
+        },
+        okna: {
+          conversion: okna,
+          rate: 350,
+        },
+        coldBase: {
+          conversion: coldBase,
+          rate: 350,
         },
         object: {
           conversion: object,
@@ -197,9 +215,11 @@ export default {
     conversion(data) {
       // eslint-disable-next-line no-restricted-syntax
       for (const i of data.table) {
+        const strBranch = i.UF_CRM_1610526571;
         if (i.dateEstimatePrewDesing) i.UF_CRM_1596705191 = Number(i.UF_CRM_1596705191);
+        i.structure = strBranch === '1767' ? '1055' : strBranch;
       }
-      return mapValues(groupBy(data.table, 'UF_CRM_1610526571'), (i, k) => {
+      return mapValues(groupBy(data.table, 'structure'), (i, k) => {
         // eslint-disable-next-line no-nested-ternary
         const info = (k === '1054') ? {
           desing_now: {
@@ -235,7 +255,8 @@ export default {
             },
             title: 'Целевые / нецелевые',
           },
-        } : (k === '1055') ? {
+          // eslint-disable-next-line no-nested-ternary
+        } : (k === '1055' || k === '1767' || k === '1777') ? {
           headhunter_now: {
             value: sumBy(i, 'headhunter_now'),
             title: 'Собеседование',
@@ -248,6 +269,19 @@ export default {
             value: sumBy(i, 'untarget'),
             title: 'Нецелевые',
           },
+        } : (k === '1361') ? {
+          success: {
+            value: sumBy(i, 'success'),
+            title: 'Успешных',
+          },
+          okna_target: {
+            value: sumBy(i, 'target'),
+            title: 'Целевые',
+          },
+          okna_untarget: {
+            value: sumBy(i, 'untarget'),
+            title: 'Нецелевые',
+          },
         } : null;
         return {
           ...info,
@@ -255,7 +289,13 @@ export default {
             ? this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k).VALUE
             : 'Структурное подразделение не выбрано',
           // eslint-disable-next-line no-nested-ternary
-          target: k === '1054' ? data.conversion.sknebo : (k === '1055' ? data.conversion.object : null),
+          target: k === '1054'
+            // eslint-disable-next-line no-nested-ternary
+            ? data.conversion.sknebo : k === '1055'
+              // eslint-disable-next-line no-nested-ternary
+              ? data.conversion.object : k === '1777'
+                ? data.conversion.coldBase : k === '1361'
+                  ? data.conversion.okna : null,
         };
       });
     },
@@ -272,12 +312,14 @@ export default {
             create: moment(i.DATE_CREATE),
             headhunter: moment(i.UF_CRM_1611850248),
             desing: moment(i.UF_CRM_1604060854),
+            okna: moment(i.UF_CRM_1616166187),
             estimate: moment(i.UF_CRM_1597071883),
           };
           return ((date.create.isSame(current, 'months'))
             || (date.headhunter.isSame(current, 'months'))
             || (date.desing.isSame(current, 'months'))
-            || (date.estimate.isSame(current, 'months')));
+            || (date.estimate.isSame(current, 'months'))
+            || (date.okna.isSame(current, 'months')));
         });
         // eslint-disable-next-line no-param-reassign
         const getRate = this.getRate(data, current);
@@ -285,11 +327,14 @@ export default {
           conversion: {
             sknebo: getRate.sknebo,
             object: getRate.object,
+            okna: getRate.okna,
+            coldBase: getRate.coldBase,
           },
           table: data.map((i2) => {
             const Condition = {
               dateCreateNow: moment(i2.DATE_CREATE).isSame(current, 'month'),
               dateHhNow: moment(i2.UF_CRM_1611850248).isSame(current, 'month'),
+              datOknaNow: moment(i2.UF_CRM_1616166187).isSame(current, 'month'),
               dateDesingNow: moment(i2.UF_CRM_1604060854).isSame(current, 'month'),
               dateEstimateNow: moment(i2.UF_CRM_1597071883).isSame(current, 'month'),
               dateEstimatePrewDesing: moment(i2.UF_CRM_1597071883)
@@ -313,8 +358,8 @@ export default {
               desing_now: Condition.dateDesingNow && !Condition.dateEstimatePrewDesing,
               desing_only: Condition.dateDesingNow && Condition.dateEstimatePrewDesing,
               success: (Condition.dateDesingNow && !Condition.dateEstimatePrewDesing)
-                  || (Condition.dateEstimateNow && !Condition.dateDesingPrewEstimate)
-                  || Condition.dateHhNow,
+                || (Condition.dateEstimateNow && !Condition.dateDesingPrewEstimate)
+                || Condition.dateHhNow || Condition.datOknaNow,
             };
             return {
               ...i2,
@@ -368,9 +413,7 @@ export default {
     },
 
     getFilterUser() {
-      // const a = this.get_auth;
       return false;
-      // return { '=UF_CRM_1582724265': a.user.ID };
     },
 
     async getLeadData(current) {
@@ -389,11 +432,11 @@ export default {
         '=UF_CRM_5FAE552A943B9': null,
         '>=UF_CRM_1597071883': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1597071883': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
-      }, /* Окна */{
+      }, /* Окна ОКА */{
         ...this.getFilterUser(),
         '>=UF_CRM_1616166187': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1616166187': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
-      }, /* Собесы */{
+      }, /* Собеседования (все) */{
         ...this.getFilterUser(),
         '>=UF_CRM_1611850248': moment(current).clone().startOf('month').format('DD.MM.YYYY HH:mm:ss'),
         '<=UF_CRM_1611850248': moment(current).clone().endOf('month').format('DD.MM.YYYY HH:mm:ss'),
