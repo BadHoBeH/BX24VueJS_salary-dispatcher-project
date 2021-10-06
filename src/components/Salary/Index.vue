@@ -67,7 +67,9 @@ import moment from 'moment';
 import DataGrid from '@/components/Table/Index.vue';
 import { getTypeFormat } from '@/plugins/typeColumn';
 
-const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'STATUS_ID', 'UF_CRM_1610526571', 'DATE_CREATE', 'target', 'untarget', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
+const STR_BRANCH_FLD = 'UF_STRUCTURAL_BRANCH';
+
+const COLUMN_HIDDEN_DEFAULT = [0, 'TITLE', 'STATUS_ID', STR_BRANCH_FLD, 'DATE_CREATE', 'target', 'untarget', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary', 'UF_CRM_1604060854', 'UF_CRM_1597071883', 'undefined'];
 const COLUMN_SUM_DEFAULT = {
   sum: ['target', 'untarget', 'success', 'estimate_now', 'desing_now', 'estimate_only', 'desing_only', 'salary'],
   count: ['TITLE'],
@@ -75,11 +77,21 @@ const COLUMN_SUM_DEFAULT = {
 const SALARIES_DEFAULT = {
 
 };
+const STR_BRANCH_LIST = {
+  okna: '98262',
+  otk: '137923',
+  colbase: '139901',
+  obt: '73095',
+  skn: '194',
+};
+
 export default {
   components: { DataGrid },
   data() {
     return {
       locale,
+      STR_BRANCH_FLD,
+      STR_BRANCH_LIST,
       salary: {
         settings: SALARIES_DEFAULT,
       },
@@ -163,19 +175,21 @@ export default {
     getRate(data, current) {
       const sknebo = ((data.filter((i) => (moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
         || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
-          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1054') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === this.STR_BRANCH_LIST.skn) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
-      const objectTemp = data.filter((i) => includes(['1767', '1055'], i.UF_CRM_1610526571)); // Только те, которые подходят по структурным
+      // eslint-disable-next-line max-len
+      const objectTemp = data.filter((i) => includes([this.STR_BRANCH_LIST.otk, this.STR_BRANCH_LIST.obt], i.UF_CRM_1610526571)); // Только те, которые подходят по структурным
       const objectSucc = objectTemp.filter((i) => moment(i.UF_CRM_1611850248).isSame(current, 'month')); // Только успешные
       const objectTarg = objectTemp.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)); // Только целевые
       const object = (objectSucc.length / objectTarg.length) * 100;
 
-      const coldBaseTemp = data.filter((i) => includes(['1777'], i.UF_CRM_1610526571)); // Только те, которые подходят по структурным
+      // eslint-disable-next-line max-len
+      const coldBaseTemp = data.filter((i) => includes([this.STR_BRANCH_LIST.colbase], i.UF_CRM_1610526571)); // Только те, которые подходят по структурным
       const coldBaseSucc = coldBaseTemp.filter((i) => moment(i.UF_CRM_1611850248).isSame(current, 'month')); // Только успешные
       const coldBaseTarg = coldBaseTemp.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)); // Только целевые
       const coldBase = (coldBaseSucc.length / coldBaseTarg.length) * 100;
 
-      const okna = ((data.filter((i) => (moment(i.UF_CRM_1616166187).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === '1361') && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const okna = ((data.filter((i) => (moment(i.UF_CRM_1616166187).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === this.STR_BRANCH_LIST.okna) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
       return {
         sknebo: {
@@ -227,11 +241,11 @@ export default {
       for (const i of data.table) {
         const strBranch = i.UF_CRM_1610526571;
         if (i.dateEstimatePrewDesing) i.UF_CRM_1596705191 = Number(i.UF_CRM_1596705191);
-        i.structure = strBranch === '1767' ? '1055' : strBranch;
+        i.structure = strBranch === this.STR_BRANCH_LIST.otk ? this.STR_BRANCH_LIST.obt : strBranch;
       }
       return mapValues(groupBy(data.table, 'structure'), (i, k) => {
         // eslint-disable-next-line no-nested-ternary
-        const info = (k === '1054') ? {
+        const info = (k === this.STR_BRANCH_LIST.skn) ? {
           success: {
             value: sumBy(i, 'success'),
             title: 'Всего успешных',
@@ -268,7 +282,7 @@ export default {
             title: 'Итоговая зарплата',
           },
           // eslint-disable-next-line no-nested-ternary
-        } : (k === '1055' || k === '1777') ? {
+        } : (k === this.STR_BRANCH_LIST.obt || k === this.STR_BRANCH_LIST.colbase) ? {
           headhunter_now: {
             value: sumBy(i, 'headhunter_now'),
             suffix: 'count',
@@ -284,7 +298,7 @@ export default {
             suffix: null,
             title: 'Нецелевые',
           },
-        } : (k === '1361') ? {
+        } : (k === this.STR_BRANCH_LIST.okna) ? {
           success: {
             value: sumBy(i, 'success'),
             suffix: 'count',
@@ -304,16 +318,16 @@ export default {
         return {
           ...info,
           // eslint-disable-next-line no-nested-ternary
-          title: this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k)
-            ? (this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k).ID === '1055' ? 'Объект и отклики' : this.get_fieldLead('UF_CRM_1610526571').items.find((i2) => i2.ID === k).VALUE)
+          title: this.get_fieldLead(STR_BRANCH_FLD).items.find((i2) => i2.ID === k)
+            ? (this.get_fieldLead(STR_BRANCH_FLD).items.find((i2) => i2.ID === k).ID === this.STR_BRANCH_LIST.obt ? 'Объект и отклики' : this.get_fieldLead(STR_BRANCH_FLD).items.find((i2) => i2.ID === k).VALUE)
             : 'Структурное ответвление не выбрано',
           // eslint-disable-next-line no-nested-ternary
-          target: k === '1054'
+          target: k === this.STR_BRANCH_LIST.skn
             // eslint-disable-next-line no-nested-ternary
-            ? data.conversion.sknebo : k === '1055'
+            ? data.conversion.sknebo : k === this.STR_BRANCH_LIST.obt
               // eslint-disable-next-line no-nested-ternary
-              ? data.conversion.object : k === '1777'
-                ? data.conversion.coldBase : k === '1361'
+              ? data.conversion.object : k === this.STR_BRANCH_LIST.colbase
+                ? data.conversion.coldBase : k === this.STR_BRANCH_LIST.okna
                   ? data.conversion.okna : null,
         };
       });

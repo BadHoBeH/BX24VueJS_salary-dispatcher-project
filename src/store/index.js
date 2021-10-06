@@ -7,12 +7,14 @@ import * as user from './modules/user';
 import * as lead from './modules/lead';
 // eslint-disable-next-line import/no-cycle
 import * as stage from './modules/stage';
+// eslint-disable-next-line import/no-cycle
+import * as list from './modules/list';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {
-    auth, user, lead, stage,
+    auth, user, lead, stage, list,
   },
 });
 

@@ -15,7 +15,7 @@
     "bitrix24-vue": "^0.1.38",
     "devextreme": "^20.2.3",
     "devextreme-vue": "^20.2.3",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
