@@ -83,6 +83,16 @@ const STR_BRANCH_LIST = {
   colbase: '139901',
   obt: '73095',
   skn: '194',
+  ske: '209108',
+};
+
+const STR_BRANCH_TITLE = {
+  98262: 'Окна Небо',
+  137923: 'Мастера Отклики',
+  139901: 'Холодная база',
+  73095: 'Мастера Объект',
+  194: 'СК Небо',
+  209108: 'СК Эталон',
 };
 
 export default {
@@ -92,6 +102,7 @@ export default {
       locale,
       STR_BRANCH_FLD,
       STR_BRANCH_LIST,
+      STR_BRANCH_TITLE,
       salary: {
         settings: SALARIES_DEFAULT,
       },
@@ -175,25 +186,48 @@ export default {
     getRate(data, current) {
       const sknebo = ((data.filter((i) => (moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
         || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
-          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === this.STR_BRANCH_LIST.skn) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.skn) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+
+      const sketal = ((data.filter((i) => (moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
+        || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
+          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.ske) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
       // eslint-disable-next-line max-len
-      const objectTemp = data.filter((i) => includes([this.STR_BRANCH_LIST.otk, this.STR_BRANCH_LIST.obt], i.UF_CRM_1610526571)); // Только те, которые подходят по структурным
+      const objectTemp = data.filter((i) => includes([this.STR_BRANCH_LIST.otk, this.STR_BRANCH_LIST.obt], i[STR_BRANCH_FLD])); // Только те, которые подходят по структурным
       const objectSucc = objectTemp.filter((i) => moment(i.UF_CRM_1611850248).isSame(current, 'month')); // Только успешные
       const objectTarg = objectTemp.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)); // Только целевые
       const object = (objectSucc.length / objectTarg.length) * 100;
 
       // eslint-disable-next-line max-len
-      const coldBaseTemp = data.filter((i) => includes([this.STR_BRANCH_LIST.colbase], i.UF_CRM_1610526571)); // Только те, которые подходят по структурным
+      const coldBaseTemp = data.filter((i) => includes([this.STR_BRANCH_LIST.colbase], i[STR_BRANCH_FLD])); // Только те, которые подходят по структурным
       const coldBaseSucc = coldBaseTemp.filter((i) => moment(i.UF_CRM_1611850248).isSame(current, 'month')); // Только успешные
       const coldBaseTarg = coldBaseTemp.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)); // Только целевые
       const coldBase = (coldBaseSucc.length / coldBaseTarg.length) * 100;
 
-      const okna = ((data.filter((i) => (moment(i.UF_CRM_1616166187).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i.UF_CRM_1610526571 === this.STR_BRANCH_LIST.okna) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const okna = ((data.filter((i) => (moment(i.UF_CRM_1616166187).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.okna) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
       return {
         sknebo: {
           conversion: sknebo,
+          // eslint-disable-next-line no-nested-ternary
+          rate: sknebo < 30
+            // eslint-disable-next-line no-nested-ternary
+            ? 150 : sknebo < 35
+              // eslint-disable-next-line no-nested-ternary
+              ? 200 : sknebo < 40
+                // eslint-disable-next-line no-nested-ternary
+                ? 250 : sknebo < 45
+                  // eslint-disable-next-line no-nested-ternary
+                  ? 300 : sknebo < 50
+                    ? 350 : sknebo < 60
+                      ? 375 : 400,
+          // eslint-disable-next-line no-nested-ternary
+          bonus: sknebo > 60
+            ? 7000 : sknebo > 50
+              ? 5000 : 0,
+        },
+        sketal: {
+          conversion: sketal,
           // eslint-disable-next-line no-nested-ternary
           rate: sknebo < 30
             // eslint-disable-next-line no-nested-ternary
@@ -239,7 +273,7 @@ export default {
     conversion(data) {
       // eslint-disable-next-line no-restricted-syntax
       for (const i of data.table) {
-        const strBranch = i.UF_CRM_1610526571;
+        const strBranch = i[STR_BRANCH_FLD];
         if (i.dateEstimatePrewDesing) i.UF_CRM_1596705191 = Number(i.UF_CRM_1596705191);
         i.structure = strBranch === this.STR_BRANCH_LIST.otk ? this.STR_BRANCH_LIST.obt : strBranch;
       }
@@ -273,6 +307,43 @@ export default {
           },
           estimate_bonus: {
             value: data.conversion.sknebo.bonus,
+            suffix: '₽',
+            title: 'Премия',
+          },
+          itogo: {
+            value: sumBy(i, 'success') + sumBy(i, 'estimate_only') + sumBy(i, 'desing_only'),
+            suffix: 'count',
+            title: 'Итоговая зарплата',
+          },
+          // eslint-disable-next-line no-nested-ternary
+        } : (k === this.STR_BRANCH_LIST.ske) ? {
+          success: {
+            value: sumBy(i, 'success'),
+            title: 'Всего успешных',
+            suffix: 'count',
+          },
+          desing_now: {
+            value: sumBy(i, 'desing_now'),
+            title: 'Дизайн/конверсия',
+            suffix: 'count',
+          },
+          estimate_now: {
+            value: sumBy(i, 'estimate_now'),
+            suffix: 'count',
+            title: 'Замер/конверсия',
+          },
+          desing_only: {
+            value: sumBy(i, 'desing_only'),
+            suffix: 'count',
+            title: 'Дизайн/выплата',
+          },
+          estimate_only: {
+            value: sumBy(i, 'estimate_only'),
+            suffix: 'count',
+            title: 'Замер/выплата',
+          },
+          estimate_bonus: {
+            value: data.conversion.sketal.bonus,
             suffix: '₽',
             title: 'Премия',
           },
@@ -318,17 +389,17 @@ export default {
         return {
           ...info,
           // eslint-disable-next-line no-nested-ternary
-          title: this.get_fieldLead(STR_BRANCH_FLD).items.find((i2) => i2.ID === k)
-            ? (this.get_fieldLead(STR_BRANCH_FLD).items.find((i2) => i2.ID === k).ID === this.STR_BRANCH_LIST.obt ? 'Объект и отклики' : this.get_fieldLead(STR_BRANCH_FLD).items.find((i2) => i2.ID === k).VALUE)
-            : 'Структурное ответвление не выбрано',
+          title: this.STR_BRANCH_TITLE[k] || 'Структурное ответвление не определено',
           // eslint-disable-next-line no-nested-ternary
           target: k === this.STR_BRANCH_LIST.skn
             // eslint-disable-next-line no-nested-ternary
-            ? data.conversion.sknebo : k === this.STR_BRANCH_LIST.obt
+            ? data.conversion.sknebo : k === this.STR_BRANCH_LIST.ske
               // eslint-disable-next-line no-nested-ternary
-              ? data.conversion.object : k === this.STR_BRANCH_LIST.colbase
-                ? data.conversion.coldBase : k === this.STR_BRANCH_LIST.okna
-                  ? data.conversion.okna : null,
+              ? data.conversion.sketal : k === this.STR_BRANCH_LIST.obt
+              // eslint-disable-next-line no-nested-ternary
+                ? data.conversion.object : k === this.STR_BRANCH_LIST.colbase
+                  ? data.conversion.coldBase : k === this.STR_BRANCH_LIST.okna
+                    ? data.conversion.okna : null,
         };
       });
     },
@@ -424,6 +495,10 @@ export default {
             return i.TEXT || null;
           } case 'crm_status': {
             if (k === 'STATUS_ID') return this.get_dataStage(i).NAME;
+            return ' - ';
+          } case 'iblock_element': {
+            // eslint-disable-next-line no-unused-expressions
+            if (k === 'UF_STRUCTURAL_BRANCH') return this.STR_BRANCH_TITLE[i] || 'Структурное ответвление не определено';
             return ' - ';
           } case 'S:employee': {
             // eslint-disable-next-line no-nested-ternary
