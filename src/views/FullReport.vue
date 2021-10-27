@@ -483,7 +483,7 @@ export default {
             if (k === 'UF_STRUCTURAL_BRANCH') return this.STR_BRANCH_TITLE[i] || 'Структурное ответвление не определено';
             return ' - ';
           } case 'crm_status': {
-            if (k === 'STATUS_ID') return this.get_dataStage(i).NAME;
+            if (k === 'STATUS_ID') return this.get_dataStage(i) ? this.get_dataStage(i).NAME : null;
             return ' - ';
           } case 'S:employee': {
             // eslint-disable-next-line no-nested-ternary

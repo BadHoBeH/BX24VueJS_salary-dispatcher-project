@@ -31,6 +31,7 @@ export default {
           key: 'ID',
         },
         stage: {
+          filter: { ENTITY_ID: 'STATUS' },
           select: ['NAME', 'NAME_INT', 'STATUS_ID'],
           key: 'STATUS_ID',
         },

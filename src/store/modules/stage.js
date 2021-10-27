@@ -46,7 +46,6 @@ export const actions = {
     commit('SET_ALL_LOADING', state.all.loading + 1);
     try {
       console.log('get', query);
-      // if (!state.all.fields) store.dispatch('lead/fields', query);
       const { result } = await (await bitrixAuth()).list(Method.CRM_STATUS_LIST, query);
       console.log(result);
       commit('SET_ALL_LOADING', state.all.loading - 1);

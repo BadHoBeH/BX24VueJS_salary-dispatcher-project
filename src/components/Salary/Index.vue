@@ -19,8 +19,9 @@
             v-for="(i1, k1) in conversion(i)"
             size="small"
             :key="k1" :title="i1.title" :bordered="false">
+            {{ i1 }}
             <a-row>
-              <a-col v-if="round(i1.target ? i1.target.conversion : 0, 2) > 0" :span="4">
+              <a-col :span="4">
                 <a-progress
                   type="circle"
                   :strokeColor="round(i1.target ? i1.target.conversion : 0) < 50
@@ -184,13 +185,21 @@ export default {
     }),
 
     getRate(data, current) {
-      const sknebo = ((data.filter((i) => (moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
-        || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
-          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.skn) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const arr = {
+        sknebo: {
+          s: data.filter((i) => (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.skn) && ((moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
+            || ((moment(i.UF_CRM_1597071883).isSame(current, 'month')) && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883)))))),
+          a: data.filter((i) => i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.skn && moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)),
+        },
+        sketal: {
+          s: data.filter((i) => (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.ske) && ((moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
+            || ((moment(i.UF_CRM_1597071883).isSame(current, 'month')) && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883)))))),
+          a: data.filter((i) => i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.ske && moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)),
+        },
+      };
 
-      const sketal = ((data.filter((i) => (moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
-        || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
-          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.ske) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const sknebo = (arr.sknebo.s.length / arr.sknebo.a.length) * 100;
+      const sketal = (arr.sketal.s.length / arr.sketal.a.length) * 100;
 
       // eslint-disable-next-line max-len
       const objectTemp = data.filter((i) => includes([this.STR_BRANCH_LIST.otk, this.STR_BRANCH_LIST.obt], i[STR_BRANCH_FLD])); // Только те, которые подходят по структурным
@@ -206,56 +215,41 @@ export default {
 
       const okna = ((data.filter((i) => (moment(i.UF_CRM_1616166187).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.okna) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
+      /* eslint-disable no-nested-ternary */
+
       return {
         sknebo: {
           conversion: sknebo,
-          // eslint-disable-next-line no-nested-ternary
           rate: sknebo < 30
-            // eslint-disable-next-line no-nested-ternary
             ? 150 : sknebo < 35
-              // eslint-disable-next-line no-nested-ternary
               ? 200 : sknebo < 40
-                // eslint-disable-next-line no-nested-ternary
                 ? 250 : sknebo < 45
-                  // eslint-disable-next-line no-nested-ternary
                   ? 300 : sknebo < 50
                     ? 350 : sknebo < 60
                       ? 375 : 400,
-          // eslint-disable-next-line no-nested-ternary
           bonus: sknebo > 60
             ? 7000 : sknebo > 50
               ? 5000 : 0,
         },
         sketal: {
           conversion: sketal,
-          // eslint-disable-next-line no-nested-ternary
-          rate: sknebo < 30
-            // eslint-disable-next-line no-nested-ternary
-            ? 150 : sknebo < 35
-              // eslint-disable-next-line no-nested-ternary
-              ? 200 : sknebo < 40
-                // eslint-disable-next-line no-nested-ternary
-                ? 250 : sknebo < 45
-                  // eslint-disable-next-line no-nested-ternary
-                  ? 300 : sknebo < 50
-                    ? 350 : sknebo < 60
+          rate: sketal < 30
+            ? 150 : sketal < 35
+              ? 200 : sketal < 40
+                ? 250 : sketal < 45
+                  ? 300 : sketal < 50
+                    ? 350 : sketal < 60
                       ? 375 : 400,
-          // eslint-disable-next-line no-nested-ternary
-          bonus: sknebo > 60
-            ? 7000 : sknebo > 50
+          bonus: sketal > 60
+            ? 7000 : sketal > 50
               ? 5000 : 0,
         },
         object: {
           conversion: object,
-          // eslint-disable-next-line no-nested-ternary
           rate: object < 30
-            // eslint-disable-next-line no-nested-ternary
             ? 150 : object < 35
-              // eslint-disable-next-line no-nested-ternary
               ? 200 : object < 40
-                // eslint-disable-next-line no-nested-ternary
                 ? 250 : object < 45
-                  // eslint-disable-next-line no-nested-ternary
                   ? 300 : object < 50
                     ? 350 : 350,
         },
@@ -305,6 +299,16 @@ export default {
             suffix: 'count',
             title: 'Замер/выплата',
           },
+          main_target: {
+            value: sumBy(i, 'target'),
+            suffix: null,
+            title: 'Целевые',
+          },
+          main_untarget: {
+            value: sumBy(i, 'untarget'),
+            suffix: null,
+            title: 'Нецелевые',
+          },
           estimate_bonus: {
             value: data.conversion.sknebo.bonus,
             suffix: '₽',
@@ -336,6 +340,16 @@ export default {
             value: sumBy(i, 'desing_only'),
             suffix: 'count',
             title: 'Дизайн/выплата',
+          },
+          main_target: {
+            value: sumBy(i, 'target'),
+            suffix: null,
+            title: 'Целевые',
+          },
+          main_untarget: {
+            value: sumBy(i, 'untarget'),
+            suffix: null,
+            title: 'Нецелевые',
           },
           estimate_only: {
             value: sumBy(i, 'estimate_only'),
@@ -494,7 +508,7 @@ export default {
           } case 'S:HTML': {
             return i.TEXT || null;
           } case 'crm_status': {
-            if (k === 'STATUS_ID') return this.get_dataStage(i).NAME;
+            if (k === 'STATUS_ID') return this.get_dataStage(i) ? this.get_dataStage(i).NAME : null;
             return ' - ';
           } case 'iblock_element': {
             // eslint-disable-next-line no-unused-expressions
