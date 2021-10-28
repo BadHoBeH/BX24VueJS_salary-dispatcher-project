@@ -19,7 +19,6 @@
             v-for="(i1, k1) in conversion(i)"
             size="small"
             :key="k1" :title="i1.title" :bordered="false">
-            {{ i1 }}
             <a-row>
               <a-col :span="4">
                 <a-progress

@@ -19,7 +19,7 @@
             size="small"
             :key="k1" :title="i1.title" :bordered="false">
             <a-row>
-              <a-col v-if="round(i1.target ? i1.target.conversion : 0, 2)" :span="4">
+              <a-col :span="4">
                 <a-progress
                   type="circle"
                   :strokeColor="round(i1.target ? i1.target.conversion : 0) < 50
@@ -75,6 +75,7 @@ const STR_BRANCH_LIST = {
   colbase: '139901',
   obt: '73095',
   skn: '194',
+  ske: '209108',
 };
 
 const STR_BRANCH_TITLE = {
@@ -177,13 +178,21 @@ export default {
     }),
 
     getRate(data, current) {
-      const sknebo = ((data.filter((i) => (moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
-        || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
-          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.skn) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const arr = {
+        sknebo: {
+          s: data.filter((i) => (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.skn) && ((moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
+            || ((moment(i.UF_CRM_1597071883).isSame(current, 'month')) && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883)))))),
+          a: data.filter((i) => i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.skn && moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)),
+        },
+        sketal: {
+          s: data.filter((i) => (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.ske) && ((moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
+            || ((moment(i.UF_CRM_1597071883).isSame(current, 'month')) && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883)))))),
+          a: data.filter((i) => i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.ske && moment(i.DATE_CREATE).isSame(current, 'month') && !!Number(i.UF_CRM_1581944554)),
+        },
+      };
 
-      const sketal = ((data.filter((i) => (moment(i.UF_CRM_1604060854).isSame(current, 'month') && !(moment(i.UF_CRM_1597071883).isBefore(moment(i.UF_CRM_1604060854))))
-        || ((moment(i.UF_CRM_1597071883).isSame(current, 'month'))
-          && !(moment(i.UF_CRM_1604060854).isBefore(moment(i.UF_CRM_1597071883))))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.ske) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
+      const sknebo = (arr.sknebo.s.length / arr.sknebo.a.length) * 100;
+      const sketal = (arr.sketal.s.length / arr.sketal.a.length) * 100;
 
       // eslint-disable-next-line max-len
       const objectTemp = data.filter((i) => includes([this.STR_BRANCH_LIST.otk, this.STR_BRANCH_LIST.obt], i[STR_BRANCH_FLD])); // Только те, которые подходят по структурным
@@ -199,61 +208,23 @@ export default {
 
       const okna = ((data.filter((i) => (moment(i.UF_CRM_1616166187).isSame(current, 'month'))).length) / (data.filter((i) => moment(i.DATE_CREATE).isSame(current, 'month') && (i[STR_BRANCH_FLD] === this.STR_BRANCH_LIST.okna) && !!Number(i.UF_CRM_1581944554)).length)) * 100;
 
+      /* eslint-disable no-nested-ternary */
+
       return {
         sknebo: {
           conversion: sknebo,
-          // eslint-disable-next-line no-nested-ternary
-          rate: sknebo < 30
-            // eslint-disable-next-line no-nested-ternary
-            ? 150 : sknebo < 35
-              // eslint-disable-next-line no-nested-ternary
-              ? 200 : sknebo < 40
-                // eslint-disable-next-line no-nested-ternary
-                ? 250 : sknebo < 45
-                  // eslint-disable-next-line no-nested-ternary
-                  ? 300 : sknebo < 50
-                    ? 350 : 375,
         },
         sketal: {
           conversion: sketal,
-          // eslint-disable-next-line no-nested-ternary
-          rate: sknebo < 30
-            // eslint-disable-next-line no-nested-ternary
-            ? 150 : sknebo < 35
-              // eslint-disable-next-line no-nested-ternary
-              ? 200 : sknebo < 40
-                // eslint-disable-next-line no-nested-ternary
-                ? 250 : sknebo < 45
-                  // eslint-disable-next-line no-nested-ternary
-                  ? 300 : sknebo < 50
-                    ? 350 : sknebo < 60
-                      ? 375 : 400,
-          // eslint-disable-next-line no-nested-ternary
-          bonus: sknebo > 60
-            ? 7000 : sknebo > 50
-              ? 5000 : 0,
-        },
-        okna: {
-          conversion: okna,
-          rate: 350,
-        },
-        coldBase: {
-          conversion: coldBase,
-          rate: 350,
         },
         object: {
           conversion: object,
-          // eslint-disable-next-line no-nested-ternary
-          rate: object < 30
-            // eslint-disable-next-line no-nested-ternary
-            ? 150 : object < 35
-              // eslint-disable-next-line no-nested-ternary
-              ? 200 : object < 40
-                // eslint-disable-next-line no-nested-ternary
-                ? 250 : object < 45
-                  // eslint-disable-next-line no-nested-ternary
-                  ? 300 : object < 50
-                    ? 350 : 350,
+        },
+        okna: {
+          conversion: okna,
+        },
+        coldBase: {
+          conversion: coldBase,
         },
       };
     },
@@ -293,15 +264,15 @@ export default {
             suffix: 'count',
             title: 'Замер/выплата',
           },
-          estimate_bonus: {
-            value: data.conversion.sknebo.bonus,
-            suffix: '₽',
-            title: 'Премия',
+          main_target: {
+            value: sumBy(i, 'target'),
+            suffix: null,
+            title: 'Целевые',
           },
-          itogo: {
-            value: sumBy(i, 'success') + sumBy(i, 'estimate_only') + sumBy(i, 'desing_only'),
-            suffix: 'count',
-            title: 'Итоговая зарплата',
+          main_untarget: {
+            value: sumBy(i, 'untarget'),
+            suffix: null,
+            title: 'Нецелевые',
           },
           // eslint-disable-next-line no-nested-ternary
         } : (k === this.STR_BRANCH_LIST.ske) ? {
@@ -330,22 +301,22 @@ export default {
             suffix: 'count',
             title: 'Замер/выплата',
           },
-          estimate_bonus: {
-            value: data.conversion.sketal.bonus,
-            suffix: '₽',
-            title: 'Премия',
+          main_target: {
+            value: sumBy(i, 'target'),
+            suffix: null,
+            title: 'Целевые',
           },
-          itogo: {
-            value: sumBy(i, 'success') + sumBy(i, 'estimate_only') + sumBy(i, 'desing_only'),
-            suffix: 'count',
-            title: 'Итоговая зарплата',
+          main_untarget: {
+            value: sumBy(i, 'untarget'),
+            suffix: null,
+            title: 'Нецелевые',
           },
           // eslint-disable-next-line no-nested-ternary
         } : (k === this.STR_BRANCH_LIST.obt || k === this.STR_BRANCH_LIST.colbase) ? {
           headhunter_now: {
             value: sumBy(i, 'headhunter_now'),
             suffix: 'count',
-            title: 'Итоговая зарплата',
+            title: 'Всего успешных',
           },
           headhunter_target: {
             value: sumBy(i, 'target'),
@@ -376,6 +347,7 @@ export default {
         } : null;
         return {
           ...info,
+          // eslint-disable-next-line no-nested-ternary
           title: this.STR_BRANCH_TITLE[k] || 'Структурное ответвление не определено',
           // eslint-disable-next-line no-nested-ternary
           target: k === this.STR_BRANCH_LIST.skn
@@ -417,6 +389,7 @@ export default {
         return {
           conversion: {
             sknebo: getRate.sknebo,
+            sketal: getRate.sketal,
             object: getRate.object,
             okna: getRate.okna,
             coldBase: getRate.coldBase,
