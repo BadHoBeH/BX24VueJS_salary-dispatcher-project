@@ -127,7 +127,7 @@ export default {
 
       get_auth: 'auth/getAuth',
       get_dataUser: 'user/g_id',
-      get_dataStage: 'stage/g_id',
+      get_dataStage: 'stage/g_tid',
 
     }),
 
@@ -456,8 +456,8 @@ export default {
             if (k === 'UF_STRUCTURAL_BRANCH') return this.STR_BRANCH_TITLE[i] || 'Структурное ответвление не определено';
             return ' - ';
           } case 'crm_status': {
-            if (k === 'STATUS_ID') return this.get_dataStage(i) ? this.get_dataStage(i).NAME : null;
-            return ' - ';
+            const datastage = this.get_dataStage(i, k);
+            return datastage ? datastage.NAME : null;
           } case 'S:employee': {
             // eslint-disable-next-line no-nested-ternary
             return i > 0 ? this.get_dataUser(i) ? this.get_dataUser(i).NAME : null : null;

@@ -129,7 +129,7 @@ export default {
 
       get_fieldLead: 'lead/g_fl',
       filter_dataLead: 'lead/filter',
-      get_dataStage: 'stage/g_id',
+      get_dataStage: 'stage/g_tid',
 
       get_auth: 'auth/getAuth',
       get_dataUser: 'user/g_id',
@@ -506,13 +506,14 @@ export default {
             return this.get_dealDataID(i) ? this.get_dealDataID(i).TITLE : `Не найдено [${i}]`;
           } case 'S:HTML': {
             return i.TEXT || null;
-          } case 'crm_status': {
-            if (k === 'STATUS_ID') return this.get_dataStage(i) ? this.get_dataStage(i).NAME : null;
-            return ' - ';
           } case 'iblock_element': {
             // eslint-disable-next-line no-unused-expressions
             if (k === 'UF_STRUCTURAL_BRANCH') return this.STR_BRANCH_TITLE[i] || 'Структурное ответвление не определено';
             return ' - ';
+          } case 'crm_status': {
+            const datastage = this.get_dataStage(i, k);
+            console.log(i, k, datastage);
+            return datastage ? datastage.NAME : null;
           } case 'S:employee': {
             // eslint-disable-next-line no-nested-ternary
             return i > 0 ? this.get_dataUser(i) ? this.get_dataUser(i).NAME : null : null;
@@ -522,6 +523,8 @@ export default {
           } case 'user': {
             // eslint-disable-next-line no-nested-ternary
             return i > 0 ? this.get_dataUser(i) ? this.get_dataUser(i).NAME : null : null;
+          } case 'crm_multifield': {
+            return i.map((i3) => i3.VALUE.replace(/\D/g, '').replace(/^8/, '7')).join(', ');
           } case 'L': {
             return fields(k).DISPLAY_VALUES_FORM[i];
           } case 'enumeration': {

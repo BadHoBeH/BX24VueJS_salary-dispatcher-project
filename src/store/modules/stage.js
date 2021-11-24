@@ -8,7 +8,7 @@ export const state = {
   all: {
     loading: 0,
     error: null,
-    data: {},
+    data: [],
     fields: null,
   },
 };
@@ -37,6 +37,9 @@ export const getters = {
   // eslint-disable-next-line no-shadow
   g_id: (state) => (ID) => state.all.data[ID],
   // eslint-disable-next-line no-shadow
+  g_tid: (state) => (id, type) => state.all.data
+    .find((i) => i.ENTITY_ID === type.slice(0, -3) && i.STATUS_ID === id),
+  // eslint-disable-next-line no-shadow
   g_fl: (state) => (type = 'default') => (type === 'all' ? state.all.fields.array : state.all.fields.array[type]),
 };
 
@@ -49,7 +52,7 @@ export const actions = {
       const { result } = await (await bitrixAuth()).list(Method.CRM_STATUS_LIST, query);
       console.log(result);
       commit('SET_ALL_LOADING', state.all.loading - 1);
-      commit('KEY_ALL_DATA', { array: result, key: query.key });
+      commit('SET_ALL_DATA', result);
       return true;
     } catch (e) {
       commit('SET_ALL_LOADING', state.all.loading - 1);
