@@ -246,11 +246,15 @@ export default {
         object: {
           conversion: object,
           rate: object < 30
-            ? 150 : object < 35
-              ? 200 : object < 40
-                ? 250 : object < 45
-                  ? 300 : object < 50
-                    ? 350 : 350,
+            ? 250 : object < 35
+              ? 300 : object < 40
+                ? 350 : object < 45
+                  ? 375 : object < 50
+                    ? 400 : 350,
+          bonus: object > 40
+            ? 5000 : object > 45
+              ? 6000 : object > 45
+                ? 7500 : 0,
         },
         okna: {
           conversion: okna,
@@ -370,7 +374,7 @@ export default {
           headhunter_now: {
             value: sumBy(i, 'headhunter_now'),
             suffix: 'count',
-            title: 'Итоговая зарплата',
+            title: 'За собеседования',
           },
           headhunter_target: {
             value: sumBy(i, 'target'),
@@ -381,6 +385,11 @@ export default {
             value: sumBy(i, 'untarget'),
             suffix: null,
             title: 'Нецелевые',
+          },
+          headhunter_bonus: {
+            value: data.conversion.object.bonus,
+            suffix: '₽',
+            title: 'Премия',
           },
         } : (k === this.STR_BRANCH_LIST.okna) ? {
           success: {
